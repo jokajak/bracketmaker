@@ -109,17 +109,30 @@
     .sheet-title:focus { outline: none; }
 
     /* ── Bracket layout ───────────────────────────────────────────────────── */
+    /* Two-sided: [ left half | champion | right half ]. Each half holds
+       half the participants, so the bracket is half as tall as the count. */
     .bracket {
       display: flex;
       align-items: stretch;
-      min-height: calc(var(--participants) * var(--row-h));
+      width: max-content;
+      margin: 0 auto;
+      min-height: calc(var(--participants) * var(--row-h) / 2);
     }
+    .half { display: flex; flex: 0 0 auto; }
 
     /* As a feeder item (child of a column) flex:1 distributes height evenly.
        Horizontally, columns keep their natural width — feeders fills height
        via stretch, not by growing across. */
     .match    { display: flex; flex: 1 1 0; align-items: stretch; }
     .feeders  { display: flex; flex-direction: column; flex: 0 0 auto; }
+
+    /* The right half mirrors the left: matches flow output-first (toward the
+       centre) and the connector's vertical joiner moves to the feeder side. */
+    .half.right .match { flex-direction: row-reverse; }
+    .half.right .conn-line {
+      border-left: none;
+      border-right: var(--line-w) solid var(--line);
+    }
 
     .outcol {
       display: flex;
@@ -169,13 +182,27 @@
       border-top: var(--line-w) solid var(--line);
     }
 
+    /* Centre column where the two finalists meet. */
+    .final-center {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      flex: 0 0 auto;
+      min-width: var(--col-w);
+    }
+    .champion-box { width: 100%; text-align: center; }
     .champion-label {
-      font-size: 0.7rem;
+      font-size: 0.72rem;
       text-transform: uppercase;
       letter-spacing: 0.08em;
       font-weight: 700;
       color: var(--accent);
-      margin-bottom: 2px;
+      margin-bottom: 4px;
+    }
+    .champion-line {
+      height: 0;
+      border-bottom: var(--line-w) solid var(--line);
     }
 
     /* ── Print ────────────────────────────────────────────────────────────── */

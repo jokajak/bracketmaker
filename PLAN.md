@@ -11,9 +11,13 @@ GitHub Pages (same model as jeopardymaker).
 
 ## Scope
 
+> See `REQUIREMENTS.md` for the live status checklist.
+
 ### v1 (this version)
 - Single-elimination brackets for **8, 16, 32, or 64** participants.
 - A **title** slot at the top (typed, prints what you enter).
+- **Two-sided ("March Madness") layout**: two halves mirror each other with the
+  champion in the centre.
 - **Print-friendly** output: blank matchup lines to handwrite on, controls
   hidden, landscape `@page`.
 
@@ -21,7 +25,8 @@ GitHub Pages (same model as jeopardymaker).
 - Typeable participant slots (the slot markup is already there; swap the blank
   line for an `<input>` and the print CSS keeps it clean).
 - Save / load brackets (localStorage + JSON export, à la jeopardymaker).
-- Optional two-sided (mirrored) layout to pack 32/64 onto a page more tightly.
+- A wildcard / 16-seed play-in toggle for the 64-bracket (deferred — see
+  `REQUIREMENTS.md` R10).
 
 ---
 
@@ -43,8 +48,13 @@ Because each `.feeders` is a flex column of two equal subtrees, and each
 midpoint between the two slots that feed it, at any size, with no magic-number
 spacing.
 
-For `N` participants there are `log2(N)` connector columns (`log2(N)+1`
-columns total), `N` leaf slots and `N-1` winner slots.
+### Two-sided layout
+The full bracket is `[ left half | champion | right half ]`. Each half is a
+sub-bracket of `N/2` entrants built with `build(log2(N) - 1)`, producing one
+finalist. The right half reuses the same builder, mirrored with CSS
+(`flex-direction: row-reverse` plus moving the connector's vertical joiner to
+the other side), and the champion slot sits in the centre between the two
+finalists. The bracket is therefore half as tall as the participant count.
 
 ### Connector lines
 Each `.connector` draws a vertical joiner across the middle 50% of its match

@@ -41,27 +41,39 @@ function build(rounds) {
   return match;
 }
 
-// Render a bracket of `size` participants into `container`.
+// The centre column: the two finalists (one from each half) meet here.
+function championCenter() {
+  const center = el('div', 'final-center');
+  const box = el('div', 'champion-box');
+  const label = el('div', 'champion-label');
+  label.textContent = 'Champion';
+  box.append(label, el('div', 'champion-line'));
+  center.append(box);
+  return center;
+}
+
+// Render a two-sided ("March Madness") bracket into `container`.
+// Each half is a single-elimination sub-bracket of size/2 that produces one
+// finalist; the left half flows rightward, the right half mirrors it, and the
+// champion sits in the centre between the two finalists.
 export function renderBracket(container, { size }) {
   if (!VALID_SIZES.includes(size)) {
     throw new Error(`Unsupported bracket size: ${size}`);
   }
 
-  const rounds = Math.log2(size); // number of connector columns
+  const halfRounds = Math.log2(size) - 1; // rounds within one half
   container.innerHTML = '';
   container.style.setProperty('--participants', String(size));
 
-  const bracket = build(rounds);
-  bracket.classList.add('bracket');
+  const bracket = el('div', 'bracket');
 
-  // Label the final winner slot as the champion.
-  const championOut = bracket.querySelector(':scope > .outcol > .slot.out');
-  if (championOut) {
-    const caption = el('div', 'champion-label');
-    caption.textContent = 'Champion';
-    championOut.prepend(caption);
-  }
+  const left = el('div', 'half left');
+  left.append(build(halfRounds));
 
+  const right = el('div', 'half right');
+  right.append(build(halfRounds));
+
+  bracket.append(left, championCenter(), right);
   container.append(bracket);
 }
 
