@@ -7,6 +7,17 @@
 
 const VALID_SIZES = [2, 4, 8, 16, 32, 64];
 
+// Standard tournament seeding order (top-to-bottom) within one region/quadrant.
+// Each pair of adjacent entries is a first-round matchup, so the top seed meets
+// the lowest seed, and the seed sums stay constant each round. The 16 ordering
+// matches the traditional NCAA region layout (1 at the top, 2 at the bottom).
+const SEED_ORDERS = {
+  2: [1, 2],
+  4: [1, 4, 2, 3],
+  8: [1, 8, 4, 5, 2, 7, 3, 6],
+  16: [1, 16, 8, 9, 5, 12, 4, 13, 6, 11, 3, 14, 7, 10, 2, 15],
+};
+
 function el(tag, className) {
   const node = document.createElement(tag);
   if (className) node.className = className;
@@ -60,6 +71,26 @@ function championCenter() {
   return center;
 }
 
+// Number the first-round slots within each quadrant (March Madness style).
+// The bracket splits into up to four quadrants (top-left, bottom-left,
+// top-right, bottom-right); each is seeded 1..quadrantSize in standard order,
+// so seeds repeat across quadrants the way regions do in the NCAA bracket.
+function assignSeeds(bracket, size) {
+  const regions = Math.min(4, size / 2); // quadrants, but never smaller than 2
+  const regionSize = size / regions;
+  const order = SEED_ORDERS[regionSize];
+  if (!order) return;
+
+  // Leaf slots in document order are top-to-bottom, left half then right half.
+  bracket.querySelectorAll('.slot:not(.out)').forEach((leaf, i) => {
+    const span = el('span', 'seed');
+    span.textContent = String(order[i % regionSize]);
+    leaf.classList.add('seeded');
+    if (leaf.closest('.half.right')) leaf.classList.add('seed-right');
+    leaf.append(span);
+  });
+}
+
 // Render a two-sided ("March Madness") bracket into `container`.
 // Each half is a single-elimination sub-bracket of size/2 that produces one
 // finalist; the left half flows rightward, the right half mirrors it, and the
@@ -82,6 +113,7 @@ export function renderBracket(container, { size }) {
   right.append(build(halfRounds));
 
   bracket.append(left, championCenter(), right);
+  assignSeeds(bracket, size);
   container.append(bracket);
 }
 

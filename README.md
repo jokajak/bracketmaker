@@ -31,9 +31,18 @@ bracket won't render, due to browser module-loading rules.)
 4. Click **Print bracket**. In the print dialog choose **Landscape** and
    "Fit to page" for the larger sizes.
 
-The bracket is two-sided (March Madness style) with the champion in the centre.
-Empty slots print as plain blank lines, so you can either type entries in
-advance or print a blank sheet and write players in by hand.
+The bracket is two-sided (March Madness style) with the champion in the centre,
+and the first-round slots are numbered with standard tournament **seeds** within
+each quadrant (top seed vs lowest seed). On screen each slot is a visible,
+editable field; when printing, the field boxes drop away and only the writing
+lines remain — so you can type entries in advance or print a blank sheet and
+write players in by hand.
+
+### Saving your work
+
+Your bracket is saved in the browser automatically, so a refresh won't lose it.
+To move a bracket between devices, use **Save** (downloads a `.json` file) and
+**Load** (imports one). **Clear** empties the title and entries.
 
 ## Roadmap
 
@@ -42,7 +51,11 @@ advance or print a blank sheet and write players in by hand.
 - [x] Print-friendly layout
 - [x] Two-sided (March Madness) layout
 - [x] Type participant names directly into the slots
-- [ ] Save / load brackets
+- [x] Per-quadrant seed numbers
+- [x] Save / load brackets (auto-save + JSON file export/import)
+
+See `REQUIREMENTS.md` for the full status checklist and remaining ideas (e.g. a
+16-seed play-in).
 
 ## Implementation
 

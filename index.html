@@ -80,8 +80,14 @@
       transition: background 0.15s;
     }
     .btn:hover { background: #1e40af; }
+    .btn.secondary {
+      background: #fff;
+      color: var(--accent);
+      border: 1px solid #c7d2fe;
+    }
+    .btn.secondary:hover { background: #eef2ff; }
 
-    .hint { font-size: 0.78rem; color: var(--muted); align-self: center; }
+    .hint { font-size: 0.78rem; color: var(--muted); align-self: center; max-width: 26rem; }
 
     /* ── Sheet (the printable area) ───────────────────────────────────────── */
     .sheet-scroll { flex: 1; overflow: auto; padding: 28px; }
@@ -172,6 +178,25 @@
       background: #fff;
       border-color: var(--accent);
       box-shadow: 0 0 0 2px rgba(29, 78, 216, 0.18);
+    }
+
+    /* Seed number on the outer edge of each first-round slot. */
+    .seed {
+      position: absolute;
+      bottom: calc(50% + 0.12em);
+      left: 7px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--muted);
+      line-height: 1;
+      pointer-events: none;
+    }
+    .slot.seeded .line { padding-left: 2em; }
+    .slot.seed-right .seed { left: auto; right: 7px; }
+    .slot.seed-right .line {
+      padding-left: 8px;
+      padding-right: 2em;
+      text-align: right;
     }
 
     /* Connector: one continuous shape per match. ::before draws the two arms
@@ -294,8 +319,12 @@
       </select>
     </div>
     <button id="print" class="btn">Print bracket</button>
-    <span class="hint">Tip: in the print dialog choose <strong>Landscape</strong> and
-      "Fit to page" for large brackets.</span>
+    <button id="save" class="btn secondary">Save</button>
+    <button id="load" class="btn secondary">Load</button>
+    <button id="clear" class="btn secondary">Clear</button>
+    <input id="file" type="file" accept="application/json,.json" hidden>
+    <span class="hint">Your bracket is saved in this browser automatically. Use
+      <strong>Save</strong>/<strong>Load</strong> to move it between devices.</span>
   </div>
 
   <div class="sheet-scroll">
@@ -307,20 +336,92 @@
   </div>
 
   <script type="module">
-    import { renderBracket } from './src/bracket.js';
+    import { renderBracket, VALID_SIZES } from './src/bracket.js';
+
+    const STORAGE_KEY = 'bracketmaker:current';
 
     const sizeSelect = document.getElementById('size');
+    const titleInput = document.getElementById('title');
     const host = document.getElementById('bracket-host');
-    const printBtn = document.getElementById('print');
+    const fileInput = document.getElementById('file');
 
     function draw() {
       renderBracket(host, { size: Number(sizeSelect.value) });
     }
 
-    sizeSelect.addEventListener('change', draw);
-    printBtn.addEventListener('click', () => window.print());
+    // ── State: title + size + every typed entry, keyed by slot order ────────
+    function collectState() {
+      return {
+        app: 'bracketmaker',
+        version: 1,
+        size: Number(sizeSelect.value),
+        title: titleInput.value,
+        entries: [...host.querySelectorAll('.line')].map((i) => i.value),
+        champion: host.querySelector('.champion-line')?.value ?? '',
+      };
+    }
 
-    draw();
+    function applyState(state) {
+      if (!state || typeof state !== 'object') return;
+      if (VALID_SIZES.includes(state.size)) sizeSelect.value = String(state.size);
+      draw(); // rebuild at the right size, then fill the (deterministic) slots
+      titleInput.value = state.title ?? '';
+      const inputs = [...host.querySelectorAll('.line')];
+      (state.entries ?? []).forEach((v, i) => { if (inputs[i]) inputs[i].value = v; });
+      const champ = host.querySelector('.champion-line');
+      if (champ) champ.value = state.champion ?? '';
+    }
+
+    // ── Auto-save to this browser ───────────────────────────────────────────
+    function saveLocal() {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(collectState())); }
+      catch { /* storage full or unavailable — ignore */ }
+    }
+    function loadLocal() {
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY)); }
+      catch { return null; }
+    }
+
+    // ── Save / load to a JSON file ──────────────────────────────────────────
+    function saveFile() {
+      const blob = new Blob([JSON.stringify(collectState(), null, 2)],
+        { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = (titleInput.value.trim() || 'bracket') + '.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+    fileInput.addEventListener('change', async () => {
+      const file = fileInput.files[0];
+      if (!file) return;
+      try {
+        applyState(JSON.parse(await file.text()));
+        saveLocal();
+      } catch {
+        alert('Sorry — that file is not a valid bracket.');
+      }
+      fileInput.value = '';
+    });
+
+    // ── Wire up controls ────────────────────────────────────────────────────
+    sizeSelect.addEventListener('change', () => { draw(); saveLocal(); });
+    host.addEventListener('input', saveLocal);
+    titleInput.addEventListener('input', saveLocal);
+    document.getElementById('print').addEventListener('click', () => window.print());
+    document.getElementById('save').addEventListener('click', saveFile);
+    document.getElementById('load').addEventListener('click', () => fileInput.click());
+    document.getElementById('clear').addEventListener('click', () => {
+      if (!confirm('Clear the title and all entries on this bracket?')) return;
+      titleInput.value = '';
+      draw();
+      saveLocal();
+    });
+
+    // ── Restore the last bracket, or start fresh ────────────────────────────
+    const saved = loadLocal();
+    if (saved) applyState(saved); else draw();
   </script>
 </body>
 </html>
