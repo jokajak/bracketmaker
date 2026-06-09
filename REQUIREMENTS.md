@@ -17,7 +17,7 @@ keys: ✅ done · 🔜 planned (agreed, not built) · 💡 idea (needs decisions
 | R6 | Two-sided ("March Madness") layout | Left half flows right, right half mirrors it, champion in the centre. |
 | R6a | Smooth, connected connectors | Each connector is one rounded shape; arms, joiner and stub are colinear so lines never break. |
 | R7 | Static hosting | No build step; served from the repo root on GitHub Pages. |
-| R8 | Fillable entries | Every slot (and the champion) is a text input — type names directly, or leave blank to handwrite. Empty inputs print as plain blank lines. |
+| R8 | Fillable entries | Every slot (and the champion) is a text input — type names directly, or leave blank to handwrite. On screen each shows a visible field box; printing strips the box and keeps only the writing line. |
 
 ---
 

@@ -156,17 +156,23 @@
       left: 0;
       right: 0;
       bottom: 50%;
-      height: 1.6em;
-      border: none;
+      height: 1.7em;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
       border-bottom: var(--line-w) solid var(--line);
-      background: transparent;
+      border-radius: 4px 4px 0 0;
       font: inherit;
       font-size: 0.95rem;
       color: var(--ink);
       padding: 0 8px;
     }
-    .line:hover { background: rgba(29, 78, 216, 0.05); }
-    .line:focus { outline: none; background: rgba(29, 78, 216, 0.08); }
+    .line:hover { background: #eef2ff; }
+    .line:focus {
+      outline: none;
+      background: #fff;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(29, 78, 216, 0.18);
+    }
 
     /* Connector: one continuous shape per match. ::before draws the two arms
        (at 25% / 75%, where the feeder slots sit) joined by a vertical bar with
@@ -215,7 +221,7 @@
       position: absolute;
       left: 0;
       right: 0;
-      bottom: calc(50% + 1.7em);
+      bottom: calc(50% + 2em);
       text-align: center;
       font-size: 0.72rem;
       text-transform: uppercase;
@@ -228,10 +234,11 @@
       left: 0;
       right: 0;
       bottom: 50%;
-      height: 1.6em;
-      border: none;
+      height: 1.7em;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
       border-bottom: var(--line-w) solid var(--line);
-      background: transparent;
+      border-radius: 4px 4px 0 0;
       font: inherit;
       font-weight: 700;
       font-size: 0.95rem;
@@ -239,8 +246,13 @@
       text-align: center;
       padding: 0 8px;
     }
-    .champion-line:hover { background: rgba(29, 78, 216, 0.05); }
-    .champion-line:focus { outline: none; background: rgba(29, 78, 216, 0.08); }
+    .champion-line:hover { background: #eef2ff; }
+    .champion-line:focus {
+      outline: none;
+      background: #fff;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(29, 78, 216, 0.18);
+    }
 
     /* ── Print ────────────────────────────────────────────────────────────── */
     @media print {
@@ -255,6 +267,14 @@
         width: 100%;
       }
       .sheet-title::placeholder { color: transparent; }
+      /* Editable-field chrome is on-screen only: print just the writing line. */
+      .line, .champion-line {
+        background: transparent !important;
+        border: none !important;
+        border-bottom: var(--line-w) solid var(--line) !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+      }
       /* Ask the browser to honour line colors. */
       * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     }
