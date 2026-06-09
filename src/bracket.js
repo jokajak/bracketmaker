@@ -5,7 +5,7 @@
 // centered between the two slots that feed it, for any power-of-two size,
 // with no magic-number spacing.
 
-const VALID_SIZES = [8, 16, 32, 64];
+const VALID_SIZES = [2, 4, 8, 16, 32, 64];
 
 function el(tag, className) {
   const node = document.createElement(tag);
@@ -37,7 +37,6 @@ function build(rounds) {
   feeders.append(build(rounds - 1), build(rounds - 1));
 
   const connector = el('div', 'connector');
-  connector.append(el('div', 'conn-line'));
 
   const outcol = el('div', 'outcol');
   outcol.append(slot(true));

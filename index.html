@@ -16,9 +16,10 @@
       --ink:     #111827;
       --muted:   #6b7280;
       --col-w:   160px;     /* width of each slot/column */
-      --conn-w:  20px;      /* width of a connector column */
+      --conn-w:  26px;      /* width of a connector column */
       --row-h:   2.75rem;   /* min height of a first-round row */
       --line-w:  2.5px;     /* stroke width of all lines */
+      --elbow:   9px;       /* corner radius of the connector elbows */
     }
 
     html, body { height: 100%; }
@@ -127,12 +128,8 @@
     .feeders  { display: flex; flex-direction: column; flex: 0 0 auto; }
 
     /* The right half mirrors the left: matches flow output-first (toward the
-       centre) and the connector's vertical joiner moves to the feeder side. */
+       centre). The elbows themselves are flipped where .connector is styled. */
     .half.right .match { flex-direction: row-reverse; }
-    .half.right .conn-line {
-      border-left: none;
-      border-right: var(--line-w) solid var(--line);
-    }
 
     .outcol {
       display: flex;
@@ -171,27 +168,39 @@
     .line:hover { background: rgba(29, 78, 216, 0.05); }
     .line:focus { outline: none; background: rgba(29, 78, 216, 0.08); }
 
-    /* Connector: vertical joiner across the middle 50% + a stub to the output. */
+    /* Connector: one continuous shape per match. ::before draws the two arms
+       (at 25% / 75%, where the feeder slots sit) joined by a vertical bar with
+       rounded corners; ::after is the stub from the bar's middle to the winner
+       slot. Everything meets edge-to-edge, so the line never breaks. */
     .connector {
       width: var(--conn-w);
       flex: 0 0 auto;
-      display: flex;
-      align-items: center;
-    }
-    .conn-line {
       position: relative;
-      width: 100%;
-      height: 50%;
-      border-left: var(--line-w) solid var(--line);
     }
-    .conn-line::after {
+    /* The arms are border-top/bottom; nudged so each line is colinear with the
+       writing lines it joins (which sit on the lower edge of their band). */
+    .connector::before {
       content: "";
       position: absolute;
-      top: 50%;
+      top: calc(25% - var(--line-w));
+      bottom: 25%;
       left: 0;
-      width: 100%;
-      border-top: var(--line-w) solid var(--line);
+      right: 50%;
+      border: var(--line-w) solid var(--line);
+      border-left: none;
+      border-top-right-radius: var(--elbow);
+      border-bottom-right-radius: var(--elbow);
     }
+    .connector::after {
+      content: "";
+      position: absolute;
+      bottom: 50%;
+      left: 50%;
+      right: 0;
+      border-bottom: var(--line-w) solid var(--line);
+    }
+    /* The right half is mirrored, so flip its elbows horizontally. */
+    .half.right .connector { transform: scaleX(-1); }
 
     /* Centre column where the two finalists meet. */
     .final-center {
@@ -256,6 +265,8 @@
     <div class="control">
       <label for="size">Participants</label>
       <select id="size">
+        <option value="2">2</option>
+        <option value="4">4</option>
         <option value="8">8</option>
         <option value="16" selected>16</option>
         <option value="32">32</option>

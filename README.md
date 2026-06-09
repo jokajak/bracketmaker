@@ -1,8 +1,9 @@
 # Bracket Maker
 
 Generate printable single-elimination tournament brackets. Pick a size
-(8, 16, 32, or 64 participants), add a title, and print a blank bracket to
-fill in by hand. No server, no build step, no accounts.
+(2, 4, 8, 16, 32, or 64 participants), add a title, and either type entries in
+or print a blank bracket to fill in by hand. No server, no build step, no
+accounts.
 
 ## Use it
 
@@ -24,7 +25,7 @@ bracket won't render, due to browser module-loading rules.)
 
 ## How to use
 
-1. Choose the number of **Participants** (8 / 16 / 32 / 64).
+1. Choose the number of **Participants** (2 / 4 / 8 / 16 / 32 / 64).
 2. Type a **title** for the bracket (optional).
 3. Type names into the slots, or leave them blank to fill in by hand.
 4. Click **Print bracket**. In the print dialog choose **Landscape** and
@@ -36,7 +37,7 @@ advance or print a blank sheet and write players in by hand.
 
 ## Roadmap
 
-- [x] Configurable single-elimination brackets (8/16/32/64)
+- [x] Configurable single-elimination brackets (2/4/8/16/32/64)
 - [x] Title slot
 - [x] Print-friendly layout
 - [x] Two-sided (March Madness) layout

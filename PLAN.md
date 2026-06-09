@@ -57,11 +57,16 @@ the other side), and the champion slot sits in the centre between the two
 finalists. The bracket is therefore half as tall as the participant count.
 
 ### Connector lines
-Each `.connector` draws a vertical joiner across the middle 50% of its match
-(connecting the two feeder slots, which sit at 25% / 75%) plus a horizontal
-stub from the centre out to the winner slot. Each writing line is a text
-`<input>` whose bottom border is anchored to its band's vertical centre
-(`bottom: 50%`), so the connectors meet it exactly whether it's blank or typed.
+Each `.connector` is drawn as a single rounded shape: a `::before` box supplies
+the two arms (at 25% / 75%, where the feeder slots sit) joined by a vertical bar
+with rounded corners, and a `::after` is the stub from the bar's middle to the
+winner slot. Every writing line is a text `<input>` whose bottom border is
+anchored to its band (`bottom: 50%`); the arms and stub are nudged so all the
+horizontal lines are colinear, so the bracket never shows a step or gap. The
+right half reuses the same connector flipped with `transform: scaleX(-1)`.
+
+The smallest bracket (2) has no connectors — each half is a single entrant line
+that runs straight into the champion in the centre.
 
 ---
 
