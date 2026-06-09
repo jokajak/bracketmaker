@@ -33,10 +33,15 @@ bracket won't render, due to browser module-loading rules.)
 
 The bracket is two-sided (March Madness style) with the champion in the centre,
 and the first-round slots are numbered with standard tournament **seeds** within
-each quadrant (top seed vs lowest seed). On screen each slot is a visible,
-editable field; when printing, the field boxes drop away and only the writing
-lines remain — so you can type entries in advance or print a blank sheet and
-write players in by hand.
+each quadrant (top seed vs lowest seed).
+
+Type the competitors into the first-round slots; each later round (and the
+champion) is a **dropdown that picks the winner** from its two feeding
+competitors — so you advance teams by selecting, not retyping, and fixing a name
+flows forward automatically. On screen each slot is a visible, editable field;
+when printing, the field boxes and dropdown arrows drop away and only the writing
+lines remain — so you can fill it in on screen or print a blank sheet and write
+players in by hand.
 
 ### Saving your work
 
@@ -51,6 +56,7 @@ To move a bracket between devices, use **Save** (downloads a `.json` file) and
 - [x] Print-friendly layout
 - [x] Two-sided (March Madness) layout
 - [x] Type participant names directly into the slots
+- [x] Pick round winners from the two feeding competitors
 - [x] Per-quadrant seed numbers
 - [x] Save / load brackets (auto-save + JSON file export/import)
 

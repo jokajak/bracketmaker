@@ -4,6 +4,10 @@
 // layout. The recursion guarantees that every connector line is vertically
 // centered between the two slots that feed it, for any power-of-two size,
 // with no magic-number spacing.
+//
+// First-round slots are free-text inputs. Every later round (and the champion)
+// is a <select> that picks the winner from its two feeding competitors; it
+// stores *which side* advanced, so a name typed upstream propagates forward.
 
 const VALID_SIZES = [2, 4, 8, 16, 32, 64];
 
@@ -24,51 +28,91 @@ function el(tag, className) {
   return node;
 }
 
-// A single name slot — a band with a writing line at its vertical centre.
-// The line is a text input: type a name, or leave it blank to fill in by hand.
-// Leaf/feeder slots grow to fill their band; output slots stay centred.
-function slot(isOutput) {
-  const s = el('div', isOutput ? 'slot out' : 'slot');
+// First-round entrant: a free-text input. Returns { node, output }, where
+// `output` is the value-holding element the winner above reads from.
+function leafSlot() {
+  const s = el('div', 'slot');
   const input = el('input', 'line');
   input.type = 'text';
   input.autocomplete = 'off';
-  input.setAttribute('aria-label', isOutput ? 'Winner' : 'Participant');
+  input.setAttribute('aria-label', 'Participant');
   s.append(input);
-  return s;
+  return { node: s, output: input };
 }
 
-// Build the subtree for `rounds` rounds. Returns a node whose right edge
-// outputs a single (vertically centred) winner slot.
-function build(rounds) {
-  if (rounds === 0) return slot(false); // first-round entrant (leaf)
+// Winner of a match: a <select> that picks between its two feeders. The chosen
+// option's value is the feeder index ("0"/"1"); the displayed name resolves
+// live from that feeder, so upstream edits flow forward.
+function winnerSelect(feeders, className, label) {
+  const sel = el('select', className);
+  sel.setAttribute('aria-label', label);
+  const blank = el('option');
+  blank.value = '';
+  const top = el('option');
+  top.value = '0';
+  const bottom = el('option');
+  bottom.value = '1';
+  sel.append(blank, top, bottom);
+  sel.__feeders = feeders;
+  return sel;
+}
 
-  const match = el('div', 'match');
+function winnerSlot(feeders) {
+  const s = el('div', 'slot out');
+  const sel = winnerSelect(feeders, 'line winner', 'Round winner');
+  s.append(sel);
+  return { node: s, output: sel };
+}
+
+// Build the subtree for `rounds` rounds. Returns { node, output } where output
+// is the value-holder (input or select) representing this subtree's winner.
+function build(rounds) {
+  if (rounds === 0) return leafSlot();
+
+  const top = build(rounds - 1);
+  const bottom = build(rounds - 1);
 
   const feeders = el('div', 'feeders');
-  feeders.append(build(rounds - 1), build(rounds - 1));
+  feeders.append(top.node, bottom.node);
 
   const connector = el('div', 'connector');
 
+  const win = winnerSlot([top.output, bottom.output]);
   const outcol = el('div', 'outcol');
-  outcol.append(slot(true));
+  outcol.append(win.node);
 
+  const match = el('div', 'match');
   match.append(feeders, connector, outcol);
-  return match;
+  return { node: match, output: win.output };
 }
 
-// The centre column: the two finalists (one from each half) meet here.
-function championCenter() {
+// The centre column: the champion is picked from the two finalists.
+function championCenter(feeders) {
   const center = el('div', 'final-center');
   const box = el('div', 'champion-box');
   const label = el('div', 'champion-label');
   label.textContent = 'Champion';
-  const line = el('input', 'champion-line');
-  line.type = 'text';
-  line.autocomplete = 'off';
-  line.setAttribute('aria-label', 'Champion');
-  box.append(label, line);
+  const sel = winnerSelect(feeders, 'champion-line winner', 'Champion');
+  box.append(label, sel);
   center.append(box);
   return center;
+}
+
+// Resolve the live name behind a value-holder (text input or winner select).
+function resolveValue(holder) {
+  if (holder.tagName === 'INPUT') return holder.value.trim();
+  if (holder.value === '') return '';
+  const feeder = holder.__feeders[Number(holder.value)];
+  return feeder ? resolveValue(feeder) : '';
+}
+
+// Refresh every winner <select>'s option labels to its feeders' current names.
+export function syncWinners(root) {
+  root.querySelectorAll('select.winner').forEach((sel) => {
+    const [f0, f1] = sel.__feeders;
+    sel.options[1].textContent = resolveValue(f0) || '(top)';
+    sel.options[2].textContent = resolveValue(f1) || '(bottom)';
+  });
 }
 
 // Number the first-round slots within each quadrant (March Madness style).
@@ -106,14 +150,24 @@ export function renderBracket(container, { size }) {
 
   const bracket = el('div', 'bracket');
 
-  const left = el('div', 'half left');
-  left.append(build(halfRounds));
+  const left = build(halfRounds);
+  const right = build(halfRounds);
 
-  const right = el('div', 'half right');
-  right.append(build(halfRounds));
+  const leftHalf = el('div', 'half left');
+  leftHalf.append(left.node);
+  const rightHalf = el('div', 'half right');
+  rightHalf.append(right.node);
 
-  bracket.append(left, championCenter(), right);
+  bracket.append(leftHalf, championCenter([left.output, right.output]), rightHalf);
+
   assignSeeds(bracket, size);
+
+  // Keep winner choices in sync as names are typed or picks change.
+  const update = () => syncWinners(bracket);
+  bracket.addEventListener('input', update);
+  bracket.addEventListener('change', update);
+  update();
+
   container.append(bracket);
 }
 

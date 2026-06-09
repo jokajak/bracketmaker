@@ -18,8 +18,10 @@ GitHub Pages (same model as jeopardymaker).
 - A **title** slot at the top (typed, prints what you enter).
 - **Two-sided ("March Madness") layout**: two halves mirror each other with the
   champion in the centre.
-- **Fillable entries**: every slot is a text input — type names, or leave blank
-  to handwrite. On screen each is a visible field box; print keeps only the line.
+- **Fillable entries**: first-round slots are text inputs — type names, or leave
+  blank to handwrite. On screen each is a visible field box; print keeps the line.
+- **Pick-the-winner dropdowns**: later rounds and the champion select the winner
+  from their two feeders, storing the chosen side so upstream edits propagate.
 - **Per-quadrant seed numbers** in standard tournament order.
 - **Save / load**: auto-save to localStorage plus JSON file export/import.
 - **Print-friendly** output: blank matchup lines to handwrite on, controls
@@ -61,10 +63,11 @@ finalists. The bracket is therefore half as tall as the participant count.
 Each `.connector` is drawn as a single rounded shape: a `::before` box supplies
 the two arms (at 25% / 75%, where the feeder slots sit) joined by a vertical bar
 with rounded corners, and a `::after` is the stub from the bar's middle to the
-winner slot. Every writing line is a text `<input>` whose bottom border is
-anchored to its band (`bottom: 50%`); the arms and stub are nudged so all the
-horizontal lines are colinear, so the bracket never shows a step or gap. The
-right half reuses the same connector flipped with `transform: scaleX(-1)`.
+winner slot. Every writing line is an `<input>` (leaf) or `<select>` (winner)
+whose bottom border is anchored to its band (`bottom: 50%`); the arms and stub
+are nudged so all the horizontal lines are colinear, so the bracket never shows
+a step or gap. The right half reuses the same connector flipped with
+`transform: scaleX(-1)`.
 
 The smallest bracket (2) has no connectors — each half is a single entrant line
 that runs straight into the champion in the centre.
@@ -76,11 +79,19 @@ meets the lowest seed. Leaf slots in document order are top-to-bottom, left half
 then right half, which maps cleanly onto the quadrants; `assignSeeds` walks them
 and drops a `.seed` label on the outer edge (mirrored for the right half).
 
+### Winner selection
+`build` returns each subtree's value-holder (the leaf `<input>` or winner
+`<select>`). Each winner select stores its two feeders on `__feeders`; its value
+is the chosen feeder index. `resolveValue` walks those references to the live
+name, and `syncWinners` refreshes every select's option labels — so typing or
+re-picking upstream flows forward without copying strings around.
+
 ### Persistence
-The state is `{ size, title, entries[], champion }`, where `entries` is every
-`.line` value in document order — deterministic for a given size, so re-rendering
-and re-filling round-trips losslessly. It auto-saves to `localStorage` on every
-edit and can be exported/imported as a JSON file.
+The state is `{ size, title, entries[], picks[] }`: `entries` are the leaf input
+values and `picks` are each winner/champion select's chosen side, both in
+document order — deterministic for a given size, so re-rendering and re-filling
+round-trips losslessly. It auto-saves to `localStorage` on every edit and can be
+exported/imported as a JSON file.
 
 ---
 
