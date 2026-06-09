@@ -43,6 +43,13 @@ when printing, the field boxes and dropdown arrows drop away and only the writin
 lines remain — so you can fill it in on screen or print a blank sheet and write
 players in by hand.
 
+### Wildcard play-ins
+
+Toggle **Wildcard play-ins** to add a play-in for the lowest seed in each
+quadrant (the 16-seed in a 64-bracket): two wildcard competitors battle, and the
+winner faces the 1-seed. The play-in is drawn as a small fork just outside the
+bracket and works like any other matchup — pick the winner and it advances.
+
 ### Saving your work
 
 Your bracket is saved in the browser automatically, so a refresh won't lose it.
@@ -59,9 +66,9 @@ To move a bracket between devices, use **Save** (downloads a `.json` file) and
 - [x] Pick round winners from the two feeding competitors
 - [x] Per-quadrant seed numbers
 - [x] Save / load brackets (auto-save + JSON file export/import)
+- [x] Wildcard play-ins for the lowest seed in each quadrant
 
-See `REQUIREMENTS.md` for the full status checklist and remaining ideas (e.g. a
-16-seed play-in).
+See `REQUIREMENTS.md` for the full status checklist.
 
 ## Implementation
 

@@ -23,13 +23,11 @@ GitHub Pages (same model as jeopardymaker).
 - **Pick-the-winner dropdowns**: later rounds and the champion select the winner
   from their two feeders, storing the chosen side so upstream edits propagate.
 - **Per-quadrant seed numbers** in standard tournament order.
+- **Wildcard play-ins** (toggle): the lowest seed in each quadrant is decided by
+  a two-way play-in whose winner faces the 1-seed.
 - **Save / load**: auto-save to localStorage plus JSON file export/import.
 - **Print-friendly** output: blank matchup lines to handwrite on, controls
   hidden, landscape `@page`.
-
-### Later
-- A wildcard / 16-seed play-in toggle for the 64-bracket (deferred — see
-  `REQUIREMENTS.md` R11).
 
 ---
 
@@ -78,6 +76,15 @@ each is numbered `1..quadrantSize` in standard tournament order so the top seed
 meets the lowest seed. Leaf slots in document order are top-to-bottom, left half
 then right half, which maps cleanly onto the quadrants; `assignSeeds` walks them
 and drops a `.seed` label on the outer edge (mirrored for the right half).
+
+### Wildcard play-ins
+The lowest seed in each quadrant always sits at index 1 of the quadrant in
+standard seeding (the top seed's opening opponent), so `build` is given the set
+of those leaf indices and swaps in a `playinLeaf`: the seed slot becomes a winner
+`<select>` fed by two competitor inputs, with the pair drawn as a small fork
+(`.playin`) absolutely positioned in the bracket's reserved outer padding. This
+keeps the main grid pixel-aligned — the fork lives entirely in the margin and
+reuses the normal connector.
 
 ### Winner selection
 `build` returns each subtree's value-holder (the leaf `<input>` or winner

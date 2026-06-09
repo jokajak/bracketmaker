@@ -21,36 +21,19 @@ keys: ✅ done · 🔜 planned (agreed, not built) · 💡 idea (needs decisions
 | R8a | Pick-the-winner dropdowns | Every later round and the champion is a dropdown that selects the winner from its two feeding competitors. It stores which side advanced, so a name typed or fixed upstream propagates forward automatically. Prints as plain text on the line. |
 | R9 | Quadrant seed numbers | First-round slots are numbered with standard tournament seeding (top seed vs lowest seed) within each quadrant, March Madness style — so seeds repeat across the up-to-four quadrants. Shown on the outer edge of each entry and printed. The 16-per-quadrant ordering matches the traditional NCAA region layout. |
 | R10 | Save / load | Auto-saves to the browser (localStorage) so work survives a refresh. **Save** downloads the bracket as a JSON file and **Load** imports one, to move a bracket between devices. **Clear** resets the title and entries. |
+| R11 | Wildcard play-ins | A **Wildcard play-ins** toggle. When on, the lowest seed in each quadrant (the 16-seed in a 64-bracket) is decided by a two-way play-in whose winner faces the 1-seed. The seed slot becomes a winner dropdown; the two competitors are drawn as a small fork in the outer margin and print cleanly. |
 
 ---
 
 ## 🔜 Planned
 
-_Nothing actively queued — see ideas below._
-
----
-
-## 💡 Ideas (need decisions before building)
-
-### R11 — Wildcard / play-in for the 16-seed
-A "battle for the 16th seed" play-in game whose winner becomes the 16-seed that
-faces the 1-seed (à la the NCAA First Four).
-
-Decisions captured so far:
-- **Availability:** a toggle (checkbox), offered for the **64-bracket only**.
-
-Still open (deferred — not building yet):
-- **How many play-ins?** Options discussed: one per region (4 total),
-  two (like the real First Four's two 16-seed games), or just one (the overall
-  top 1-seed's opponent).
-- How a play-in slot renders (an extra mini-match feeding the 16-seed line on
-  the outer edge) and how it prints.
+_Nothing actively queued._
 
 ---
 
 ## Out of scope (for now)
 
 - Double elimination / consolation brackets
-- Byes or non-power-of-two counts (beyond the R11 play-in idea)
+- Byes or non-power-of-two counts
 - Score / result tracking
 - Accounts or cloud sync

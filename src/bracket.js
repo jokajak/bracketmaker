@@ -31,7 +31,7 @@ function el(tag, className) {
 // First-round entrant: a free-text input. Returns { node, output }, where
 // `output` is the value-holding element the winner above reads from.
 function leafSlot() {
-  const s = el('div', 'slot');
+  const s = el('div', 'slot entry');
   const input = el('input', 'line');
   input.type = 'text';
   input.autocomplete = 'off';
@@ -64,13 +64,49 @@ function winnerSlot(feeders) {
   return { node: s, output: sel };
 }
 
+// Wildcard play-in entrant: the lowest seed's slot is decided by a two-way
+// play-in. The seed line becomes a winner <select>; two competitor inputs feed
+// it, drawn as a small fork that extends into the bracket's outer margin.
+function playinLeaf() {
+  const seedSlot = el('div', 'slot entry playin-seed');
+
+  const compA = el('input', 'line');
+  compA.type = 'text';
+  compA.autocomplete = 'off';
+  compA.setAttribute('aria-label', 'Play-in competitor');
+  const compB = el('input', 'line');
+  compB.type = 'text';
+  compB.autocomplete = 'off';
+  compB.setAttribute('aria-label', 'Play-in competitor');
+
+  const seedSel = winnerSelect([compA, compB], 'line winner', 'Play-in winner');
+  seedSlot.append(seedSel);
+
+  const slotA = el('div', 'slot playin-comp');
+  slotA.append(compA);
+  const slotB = el('div', 'slot playin-comp');
+  slotB.append(compB);
+  const feeders = el('div', 'feeders');
+  feeders.append(slotA, slotB);
+  const fork = el('div', 'playin');
+  fork.append(feeders, el('div', 'connector'));
+  seedSlot.append(fork);
+
+  return { node: seedSlot, output: seedSel };
+}
+
 // Build the subtree for `rounds` rounds. Returns { node, output } where output
 // is the value-holder (input or select) representing this subtree's winner.
-function build(rounds) {
-  if (rounds === 0) return leafSlot();
+// `ctx` tracks the running leaf index and which leaves are play-ins.
+function build(rounds, ctx) {
+  if (rounds === 0) {
+    const playin = ctx.playins.has(ctx.index);
+    ctx.index += 1;
+    return playin ? playinLeaf() : leafSlot();
+  }
 
-  const top = build(rounds - 1);
-  const bottom = build(rounds - 1);
+  const top = build(rounds - 1, ctx);
+  const bottom = build(rounds - 1, ctx);
 
   const feeders = el('div', 'feeders');
   feeders.append(top.node, bottom.node);
@@ -125,8 +161,9 @@ function assignSeeds(bracket, size) {
   const order = SEED_ORDERS[regionSize];
   if (!order) return;
 
-  // Leaf slots in document order are top-to-bottom, left half then right half.
-  bracket.querySelectorAll('.slot:not(.out)').forEach((leaf, i) => {
+  // Entry slots in document order are top-to-bottom, left half then right half
+  // (play-in competitor slots are excluded — only the seeded entries count).
+  bracket.querySelectorAll('.entry').forEach((leaf, i) => {
     const span = el('span', 'seed');
     span.textContent = String(order[i % regionSize]);
     leaf.classList.add('seeded');
@@ -139,7 +176,7 @@ function assignSeeds(bracket, size) {
 // Each half is a single-elimination sub-bracket of size/2 that produces one
 // finalist; the left half flows rightward, the right half mirrors it, and the
 // champion sits in the centre between the two finalists.
-export function renderBracket(container, { size }) {
+export function renderBracket(container, { size, wildcard = false }) {
   if (!VALID_SIZES.includes(size)) {
     throw new Error(`Unsupported bracket size: ${size}`);
   }
@@ -148,10 +185,19 @@ export function renderBracket(container, { size }) {
   container.innerHTML = '';
   container.style.setProperty('--participants', String(size));
 
-  const bracket = el('div', 'bracket');
+  // When wildcards are on, the lowest seed in each quadrant (always index 1 of
+  // a quadrant in standard seeding) is decided by a play-in.
+  const ctx = { index: 0, playins: new Set() };
+  if (wildcard) {
+    const regions = Math.min(4, size / 2);
+    const regionSize = size / regions;
+    for (let r = 0; r < regions; r += 1) ctx.playins.add(r * regionSize + 1);
+  }
 
-  const left = build(halfRounds);
-  const right = build(halfRounds);
+  const bracket = el('div', wildcard ? 'bracket wildcard' : 'bracket');
+
+  const left = build(halfRounds, ctx);
+  const right = build(halfRounds, ctx);
 
   const leftHalf = el('div', 'half left');
   leftHalf.append(left.node);

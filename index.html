@@ -87,6 +87,18 @@
     }
     .btn.secondary:hover { background: #eef2ff; }
 
+    .toggle {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--ink);
+      cursor: pointer;
+      align-self: center;
+    }
+    .toggle input { width: 16px; height: 16px; cursor: pointer; accent-color: var(--accent); }
+
     .hint { font-size: 0.78rem; color: var(--muted); align-self: center; max-width: 26rem; }
 
     /* ── Sheet (the printable area) ───────────────────────────────────────── */
@@ -213,6 +225,22 @@
       text-align: right;
     }
 
+    /* ── Wildcard play-ins ─────────────────────────────────────────────────
+       The lowest seed in each quadrant is decided by a two-way play-in. Its
+       slot becomes a winner dropdown; the two competitors are drawn as a small
+       fork in the reserved outer margin, feeding the seed line. */
+    .bracket.wildcard { padding: 0 160px; }
+    .playin {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      right: 100%; /* left half: fork sits just outside the seed slot */
+      display: flex;
+      align-items: stretch;
+    }
+    .half.right .playin { right: auto; left: 100%; flex-direction: row-reverse; }
+    .playin .slot { min-width: 120px; min-height: 0; }
+
     /* Connector: one continuous shape per match. ::before draws the two arms
        (at 25% / 75%, where the feeder slots sit) joined by a vertical bar with
        rounded corners; ::after is the stub from the bar's middle to the winner
@@ -332,6 +360,7 @@
         <option value="64">64</option>
       </select>
     </div>
+    <label class="toggle"><input type="checkbox" id="wildcard"> Wildcard play-ins</label>
     <button id="print" class="btn">Print bracket</button>
     <button id="save" class="btn secondary">Save</button>
     <button id="load" class="btn secondary">Load</button>
@@ -356,21 +385,27 @@
 
     const sizeSelect = document.getElementById('size');
     const titleInput = document.getElementById('title');
+    const wildcardToggle = document.getElementById('wildcard');
     const host = document.getElementById('bracket-host');
     const fileInput = document.getElementById('file');
 
     function draw() {
-      renderBracket(host, { size: Number(sizeSelect.value) });
+      renderBracket(host, {
+        size: Number(sizeSelect.value),
+        wildcard: wildcardToggle.checked,
+      });
     }
 
-    // ── State: title + size + first-round entries + winner picks ────────────
-    // entries = the text inputs (leaves); picks = each winner/champion select's
-    // chosen side. Both are in document order, deterministic for a given size.
+    // ── State: title + size + wildcard + first-round entries + winner picks ──
+    // entries = the text inputs (leaves + play-in competitors); picks = each
+    // winner/champion/play-in select's chosen side. Both are in document order,
+    // deterministic for a given size + wildcard setting.
     function collectState() {
       return {
         app: 'bracketmaker',
-        version: 2,
+        version: 3,
         size: Number(sizeSelect.value),
+        wildcard: wildcardToggle.checked,
         title: titleInput.value,
         entries: [...host.querySelectorAll('input.line')].map((i) => i.value),
         picks: [...host.querySelectorAll('select.winner')].map((s) => s.value),
@@ -380,6 +415,7 @@
     function applyState(state) {
       if (!state || typeof state !== 'object') return;
       if (VALID_SIZES.includes(state.size)) sizeSelect.value = String(state.size);
+      wildcardToggle.checked = Boolean(state.wildcard);
       draw(); // rebuild at the right size, then fill the (deterministic) slots
       titleInput.value = state.title ?? '';
       const inputs = [...host.querySelectorAll('input.line')];
@@ -424,6 +460,7 @@
 
     // ── Wire up controls ────────────────────────────────────────────────────
     sizeSelect.addEventListener('change', () => { draw(); saveLocal(); });
+    wildcardToggle.addEventListener('change', () => { draw(); saveLocal(); });
     host.addEventListener('input', saveLocal);
     host.addEventListener('change', saveLocal); // winner dropdowns
     titleInput.addEventListener('input', saveLocal);
