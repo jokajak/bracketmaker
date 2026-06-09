@@ -26,18 +26,21 @@ bracket won't render, due to browser module-loading rules.)
 
 1. Choose the number of **Participants** (8 / 16 / 32 / 64).
 2. Type a **title** for the bracket (optional).
-3. Click **Print bracket**. In the print dialog choose **Landscape** and
+3. Type names into the slots, or leave them blank to fill in by hand.
+4. Click **Print bracket**. In the print dialog choose **Landscape** and
    "Fit to page" for the larger sizes.
 
-The printed bracket has blank lines for every matchup so you can write players
-in by hand and track winners through to the champion.
+The bracket is two-sided (March Madness style) with the champion in the centre.
+Empty slots print as plain blank lines, so you can either type entries in
+advance or print a blank sheet and write players in by hand.
 
 ## Roadmap
 
 - [x] Configurable single-elimination brackets (8/16/32/64)
 - [x] Title slot
 - [x] Print-friendly layout
-- [ ] Type participant names directly into the slots
+- [x] Two-sided (March Madness) layout
+- [x] Type participant names directly into the slots
 - [ ] Save / load brackets
 
 ## Implementation

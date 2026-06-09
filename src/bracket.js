@@ -14,10 +14,15 @@ function el(tag, className) {
 }
 
 // A single name slot — a band with a writing line at its vertical centre.
+// The line is a text input: type a name, or leave it blank to fill in by hand.
 // Leaf/feeder slots grow to fill their band; output slots stay centred.
 function slot(isOutput) {
   const s = el('div', isOutput ? 'slot out' : 'slot');
-  s.append(el('div', 'line'));
+  const input = el('input', 'line');
+  input.type = 'text';
+  input.autocomplete = 'off';
+  input.setAttribute('aria-label', isOutput ? 'Winner' : 'Participant');
+  s.append(input);
   return s;
 }
 
@@ -47,7 +52,11 @@ function championCenter() {
   const box = el('div', 'champion-box');
   const label = el('div', 'champion-label');
   label.textContent = 'Champion';
-  box.append(label, el('div', 'champion-line'));
+  const line = el('input', 'champion-line');
+  line.type = 'text';
+  line.autocomplete = 'off';
+  line.setAttribute('aria-label', 'Champion');
+  box.append(label, line);
   center.append(box);
   return center;
 }

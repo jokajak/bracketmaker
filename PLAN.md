@@ -18,12 +18,12 @@ GitHub Pages (same model as jeopardymaker).
 - A **title** slot at the top (typed, prints what you enter).
 - **Two-sided ("March Madness") layout**: two halves mirror each other with the
   champion in the centre.
+- **Fillable entries**: every slot is a text input — type names, or leave blank
+  to handwrite. Empty inputs print as plain blank lines.
 - **Print-friendly** output: blank matchup lines to handwrite on, controls
   hidden, landscape `@page`.
 
 ### Later
-- Typeable participant slots (the slot markup is already there; swap the blank
-  line for an `<input>` and the print CSS keeps it clean).
 - Save / load brackets (localStorage + JSON export, à la jeopardymaker).
 - A wildcard / 16-seed play-in toggle for the 64-bracket (deferred — see
   `REQUIREMENTS.md` R10).
@@ -59,8 +59,9 @@ finalists. The bracket is therefore half as tall as the participant count.
 ### Connector lines
 Each `.connector` draws a vertical joiner across the middle 50% of its match
 (connecting the two feeder slots, which sit at 25% / 75%) plus a horizontal
-stub from the centre out to the winner slot. Writing lines are zero-height
-rules centred in their band so the connectors meet them exactly.
+stub from the centre out to the winner slot. Each writing line is a text
+`<input>` whose bottom border is anchored to its band's vertical centre
+(`bottom: 50%`), so the connectors meet it exactly whether it's blank or typed.
 
 ---
 

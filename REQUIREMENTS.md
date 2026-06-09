@@ -16,6 +16,7 @@ keys: ✅ done · 🔜 planned (agreed, not built) · 💡 idea (needs decisions
 | R5 | Print layout | Controls hidden; landscape `@page`; "Fit to page" recommended for large sizes. |
 | R6 | Two-sided ("March Madness") layout | Left half flows right, right half mirrors it, champion in the centre. |
 | R7 | Static hosting | No build step; served from the repo root on GitHub Pages. |
+| R8 | Fillable entries | Every slot (and the champion) is a text input — type names directly, or leave blank to handwrite. Empty inputs print as plain blank lines. |
 
 ---
 
@@ -23,8 +24,7 @@ keys: ✅ done · 🔜 planned (agreed, not built) · 💡 idea (needs decisions
 
 | # | Requirement | Notes |
 |---|-------------|-------|
-| R8 | Fillable entries | Let users type participant names directly into the slots instead of only handwriting. Slots stay blank-looking when empty so the same sheet still prints for handwriting. Slot markup already supports swapping the blank line for an `<input>`. |
-| R9 | Save / load brackets | Persist a filled-in bracket (localStorage + JSON export/import, like jeopardymaker). Depends on R8. |
+| R9 | Save / load brackets | Persist a filled-in bracket so entries survive a refresh and can be shared (localStorage + JSON export/import, like jeopardymaker). |
 
 ---
 

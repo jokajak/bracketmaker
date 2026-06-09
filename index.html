@@ -141,24 +141,35 @@
       flex: 0 0 auto;
     }
 
-    /* A slot: a band with a writing line centred vertically. */
+    /* A slot: a band with a writing line at its vertical centre. */
     .slot {
       flex: 1 1 0;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
       min-width: var(--col-w);
       min-height: var(--row-h);
       position: relative;
     }
-    .slot.out { flex: 0 0 auto; min-height: 0; }
-    /* A zero-height rule sits at the band's vertical centre, so connector
-       lines meet it exactly; you write in the space above the line. */
-    .slot .line {
-      height: 0;
+    .slot.out { flex: 0 0 auto; min-height: var(--row-h); }
+
+    /* The writing line is a text input. Its bottom border is anchored to the
+       band's vertical centre (bottom: 50%) so connector lines meet it exactly;
+       you type — or write by hand — in the space just above the line. Empty
+       inputs print as a plain blank line. */
+    .line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 50%;
+      height: 1.6em;
+      border: none;
       border-bottom: var(--line-w) solid var(--line);
+      background: transparent;
+      font: inherit;
+      font-size: 0.95rem;
+      color: var(--ink);
+      padding: 0 8px;
     }
-    .slot.out .line { margin-top: 2px; }
+    .line:hover { background: rgba(29, 78, 216, 0.05); }
+    .line:focus { outline: none; background: rgba(29, 78, 216, 0.08); }
 
     /* Connector: vertical joiner across the middle 50% + a stub to the output. */
     .connector {
@@ -187,23 +198,40 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
-      align-items: center;
       flex: 0 0 auto;
       min-width: var(--col-w);
     }
-    .champion-box { width: 100%; text-align: center; }
+    .champion-box { position: relative; min-height: var(--row-h); }
     .champion-label {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: calc(50% + 1.7em);
+      text-align: center;
       font-size: 0.72rem;
       text-transform: uppercase;
       letter-spacing: 0.08em;
       font-weight: 700;
       color: var(--accent);
-      margin-bottom: 4px;
     }
     .champion-line {
-      height: 0;
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 50%;
+      height: 1.6em;
+      border: none;
       border-bottom: var(--line-w) solid var(--line);
+      background: transparent;
+      font: inherit;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--ink);
+      text-align: center;
+      padding: 0 8px;
     }
+    .champion-line:hover { background: rgba(29, 78, 216, 0.05); }
+    .champion-line:focus { outline: none; background: rgba(29, 78, 216, 0.08); }
 
     /* ── Print ────────────────────────────────────────────────────────────── */
     @media print {
