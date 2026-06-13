@@ -229,7 +229,7 @@
        The lowest seed in each quadrant is decided by a two-way play-in. Its
        slot becomes a winner dropdown; the two competitors are drawn as a small
        fork in the reserved outer margin, feeding the seed line. */
-    .bracket.wildcard { padding: 0 160px; }
+    .bracket.wildcard { padding: 0 200px; }
     .playin {
       position: absolute;
       top: 0;
@@ -239,7 +239,7 @@
       align-items: stretch;
     }
     .half.right .playin { right: auto; left: 100%; flex-direction: row-reverse; }
-    .playin .slot { min-width: 120px; min-height: 0; }
+    .playin .slot { min-width: var(--col-w); min-height: 0; }
 
     /* Connector: one continuous shape per match. ::before draws the two arms
        (at 25% / 75%, where the feeder slots sit) joined by a vertical bar with
