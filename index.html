@@ -323,7 +323,7 @@
 
     /* ── Print ────────────────────────────────────────────────────────────── */
     @media print {
-      @page { size: landscape; margin: 0.4in; }
+      @page { size: landscape; margin: 0.35in; }
       body { background: #fff; }
       .controls, .hint { display: none !important; }
       .sheet-scroll { overflow: visible; padding: 0; }
@@ -333,6 +333,10 @@
         padding: 0;
         width: 100%;
       }
+      /* The bracket is scaled to one page by JS (beforeprint); the host is sized
+         to the scaled box and clips so it can't spill onto extra pages. */
+      #bracket-host { margin: 0 auto; }
+      .bracket { transform-origin: top left; }
       .sheet-title::placeholder { color: transparent; }
       /* Editable-field chrome is on-screen only: print just the writing line. */
       .line, .champion-line {
@@ -459,6 +463,34 @@
     });
 
     // ── Wire up controls ────────────────────────────────────────────────────
+    // ── Fit the bracket onto a single landscape page when printing ──────────
+    // A transform alone keeps the original (huge) layout box, which paginates;
+    // so we also size the host to the scaled box and clip it.
+    function fitForPrint() {
+      resetPrint();
+      const bracket = host.firstElementChild;
+      if (!bracket) return;
+      const w = bracket.scrollWidth;
+      const h = bracket.scrollHeight;
+      if (!w || !h) return;
+      // Conservative landscape printable area (fits both US Letter and A4),
+      // leaving room above for the title.
+      const scale = Math.min(960 / w, 600 / h, 1);
+      bracket.style.transform = `scale(${scale})`;
+      host.style.width = `${Math.ceil(w * scale)}px`;
+      host.style.height = `${Math.ceil(h * scale)}px`;
+      host.style.overflow = 'hidden';
+    }
+    function resetPrint() {
+      const bracket = host.firstElementChild;
+      if (bracket) bracket.style.transform = '';
+      host.style.width = '';
+      host.style.height = '';
+      host.style.overflow = '';
+    }
+    window.addEventListener('beforeprint', fitForPrint);
+    window.addEventListener('afterprint', resetPrint);
+
     sizeSelect.addEventListener('change', () => { draw(); saveLocal(); });
     wildcardToggle.addEventListener('change', () => { draw(); saveLocal(); });
     host.addEventListener('input', saveLocal);

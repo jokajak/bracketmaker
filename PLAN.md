@@ -86,6 +86,13 @@ of those leaf indices and swaps in a `playinLeaf`: the seed slot becomes a winne
 keeps the main grid pixel-aligned — the fork lives entirely in the margin and
 reuses the normal connector.
 
+### Printing
+On `beforeprint`, the bracket is measured and `transform: scale()`-d to fit a
+conservative landscape printable area (≈960×600 px, safe for US Letter and A4);
+the host is sized to the scaled box with `overflow: hidden` so the (unchanged)
+layout box can't spill onto extra pages. `afterprint` restores everything. This
+makes even a 64-bracket with play-ins print as one whole page.
+
 ### Winner selection
 `build` returns each subtree's value-holder (the leaf `<input>` or winner
 `<select>`). Each winner select stores its two feeders on `__feeders`; its value

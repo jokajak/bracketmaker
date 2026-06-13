@@ -28,8 +28,9 @@ bracket won't render, due to browser module-loading rules.)
 1. Choose the number of **Participants** (2 / 4 / 8 / 16 / 32 / 64).
 2. Type a **title** for the bracket (optional).
 3. Type names into the slots, or leave them blank to fill in by hand.
-4. Click **Print bracket**. In the print dialog choose **Landscape** and
-   "Fit to page" for the larger sizes.
+4. Click **Print bracket** — it automatically scales the whole bracket onto a
+   single landscape page. Leave the print dialog's scale on **Default / 100%**
+   (no need to choose "Fit to page").
 
 The bracket is two-sided (March Madness style) with the champion in the centre,
 and the first-round slots are numbered with standard tournament **seeds** within

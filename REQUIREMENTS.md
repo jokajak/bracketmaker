@@ -13,7 +13,7 @@ keys: ✅ done · 🔜 planned (agreed, not built) · 💡 idea (needs decisions
 | R2 | Configurable size: 2 / 4 / 8 / 16 / 32 / 64 | Dropdown selector (minimum 2). |
 | R3 | Title slot | Typed title at the top of the sheet; prints what you enter. |
 | R4 | Printable, blank brackets | Blank lines for every matchup to fill in by hand. |
-| R5 | Print layout | Controls hidden; landscape `@page`; "Fit to page" recommended for large sizes. |
+| R5 | Print layout | Controls hidden; landscape `@page`; the bracket is auto-scaled (on `beforeprint`) to fit a single page, so even a 64-bracket with play-ins prints whole without being cut off. |
 | R6 | Two-sided ("March Madness") layout | Left half flows right, right half mirrors it, champion in the centre. |
 | R6a | Smooth, connected connectors | Each connector is one rounded shape; arms, joiner and stub are colinear so lines never break. |
 | R7 | Static hosting | No build step; served from the repo root on GitHub Pages. |
